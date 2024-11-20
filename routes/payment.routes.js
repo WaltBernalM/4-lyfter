@@ -1,11 +1,11 @@
 // @ts-check
 
 import { Router } from "express"
-import { postPaymentIntent } from "../controllers/payment.controller.js"
+import { postCalculatorPaymentIntent } from "../controllers/payment.controller.js"
 import { isAuthenticated } from "../middleware/jwt.middleware.js"
 
 const router = Router()
 
-router.post("/intent", isAuthenticated, postPaymentIntent)
+router.post("/intents/calculator", isAuthenticated, postCalculatorPaymentIntent)
 
 export default router

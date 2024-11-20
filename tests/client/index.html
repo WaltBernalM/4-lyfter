@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stripe Payment</title>
+  <script src="https://js.stripe.com/v3/"></script> <!-- Stripe.js -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <div class="container">
+    <h1>Login and Pay</h1>
+    <div>
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <button id="loginButton">Login</button>
+    </div>
+    <div>
+      <p>Enter card details and click below to make a payment:</p>
+      <div id="card-element"></div>
+      <div id="card-errors" role="alert"></div>
+      <button id="payButton" disabled>Pay Now</button>
+    </div>
+  </div>
+
+  <script src="./index.js"></script>
+</body>
+</html>

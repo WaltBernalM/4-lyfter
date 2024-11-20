@@ -34,7 +34,8 @@
     "mongoose": "^8.8.1",
     "morgan": "^1.10.0",
     "serve-favicon": "^2.5.0",
-    "stripe": "^17.3.1"
+    "stripe": "^17.3.1",
+    "webpack": "^5.96.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.7"
