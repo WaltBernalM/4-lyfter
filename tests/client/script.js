@@ -17,7 +17,6 @@ cardElement.on('change', (event) => {
   }
 })
 
-let lyfterUserId = ""
 // Login functionality
 document.getElementById('loginButton').addEventListener('click', async () => {
   const email = document.getElementById('email').value
@@ -36,7 +35,6 @@ document.getElementById('loginButton').addEventListener('click', async () => {
     alert("Login successful!")
     document.getElementById('payButton').disabled = false // Enable Pay button after login
     const { user: { id } }= loginData
-    lyfterUserId = id
   } else {
     alert(`Login failed: ${loginData.message}`)
   }
@@ -44,15 +42,11 @@ document.getElementById('loginButton').addEventListener('click', async () => {
 
 // Payment functionality
 document.getElementById('payButton').addEventListener('click', async () => {
-  const productId = "prod_RFo5H5a4kTWy3P"
-
   const response = await fetch('http://localhost:5005/api/payments/intents/calculator', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
-    body: JSON.stringify({
-      lyfterUserId
-    })
+    // body: JSON.stringify({ })
   })
 
   const paymentIntent = await response.json()

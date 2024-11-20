@@ -114,7 +114,7 @@ export const postLoginController = async (req, res, next) => {
 
     const secret = String(process.env.SECRET_KEY)
     const authToken = jwt.sign(
-      userData, // payload
+      { userData }, // payload
       secret, // secret key
       { algorithm: "HS256", expiresIn: "1h" }
     )

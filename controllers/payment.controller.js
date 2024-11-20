@@ -1,4 +1,3 @@
-// @ts-check
 
 import Stripe from "stripe"
 import LyfterUser from "../models/LyfterUser.model.js"
@@ -10,12 +9,12 @@ export const postCalculatorPaymentIntent = async (req, res, next) => {
 
   const stripe = new Stripe(stripeSecretKey)
 
-  const { lyfterUserId } = req.body
-  if (!lyfterUserId) {
-    return res.status(400).json({ message: "Missing lyfterUserId." })
-  }
-
   try {
+    const lyfterUserId = req.payload.userData.id
+    if (!lyfterUserId) {
+      return res.status(400).json({ message: "Missing user data from the token." });
+    }
+
     const lyfterUserInDb = LyfterUser.findById(lyfterUserId)
     if (!lyfterUserInDb) {
       return res.status(404).json({ message: `Failed payment intent, lyfter user not valid: ${lyfterUserId}` })
