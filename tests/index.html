@@ -102,7 +102,6 @@
         document.getElementById('payButton').disabled = false // Enable Pay button after login
         const { user: { id } }= loginData
         lyfterUserId = id
-        console.log(lyfterUserId)
       } else {
         alert(`Login failed: ${loginData.message}`)
       }
