@@ -7,6 +7,11 @@ import { isAppPaid } from "../middleware/isAppPaid.js"
 
 const router = Router()
 
-router.post("/intents/calculator", isAuthenticated, isAppPaid, postCalculatorPaymentIntent)
+router.post(
+  "/intents/calculator",
+  isAuthenticated,
+  isAppPaid,
+  postCalculatorPaymentIntent
+)
 
 export default router

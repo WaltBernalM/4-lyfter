@@ -12,7 +12,7 @@ export const isAuthenticated = (req, res, next) => {
     return
   }
 
-  const secret= String(process.env.SECRET_KEY)
+  const secret = String(process.env.SECRET_KEY)
   jwt({
     secret: secret,
     algorithms: ["HS256"],
@@ -20,7 +20,9 @@ export const isAuthenticated = (req, res, next) => {
     getToken: getTokenFromCookies,
   })(req, res, (error) => {
     if (error) {
-      res.status(401).json({ message: "Unauthorized: Invalid authentication Token" })
+      res
+        .status(401)
+        .json({ message: "Unauthorized: Invalid authentication Token" })
       return
     }
     next()

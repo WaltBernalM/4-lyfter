@@ -9,11 +9,13 @@ export const isAppPaid = async (req, res, next) => {
 
     const lyfterUserInDb = await LyfterUser.findById(lyfterUserId)
     if (!lyfterUserInDb) {
-      return res.status(401).json({ message: 'Unauthorized access.'})
+      return res.status(401).json({ message: "Unauthorized access." })
     }
 
     if (lyfterUserInDb.isAppPaid) {
-      return res.status(409).json({ message: "Payment has already been processed for this user." })
+      return res
+        .status(409)
+        .json({ message: "Payment has already been processed for this user." })
     }
 
     next()

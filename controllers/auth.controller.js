@@ -9,12 +9,10 @@ export const postSignupController = async (req, res, next) => {
     const { firstName, lastName, password, email, deviceFingerprint } = req.body
 
     if (!firstName || !lastName || !email || !password || !deviceFingerprint) {
-      res.status(400)
-        .json({
-          message:
-            "All fields required (firstName, lastName, email, password, deviceFingerprint)",
-        })
-      return
+      return res.status(400).json({
+        message:
+          "All fields required (firstName, lastName, email, password, deviceFingerprint)",
+      })
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
@@ -23,15 +21,14 @@ export const postSignupController = async (req, res, next) => {
       return
     }
 
-    // const passwordRegex = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}/
-    // if (!passwordRegex.test(password)) {
-    //   res.status(400).json({
-    //     message: `The password is as weak as Yamcha.
-    //   Must have at least 6 chars, must use uppercased,
-    //   and lowercased letters and have at least a number`,
-    //   })
-    //   return
-    // }
+    const passwordRegex = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}/
+    if (!passwordRegex.test(password)) {
+      return res.status(400).json({
+        message: `The password is too weak.
+        Must have at least 6 chars, must use uppercased,
+        and lowercased letters and have at least a number`,
+      })
+    }
 
     if (
       !String(email).endsWith("hotmail.com") &&
@@ -39,16 +36,16 @@ export const postSignupController = async (req, res, next) => {
       !String(email).endsWith("outlook.com") &&
       !String(email).endsWith(".com.mx")
     ) {
-      res.status(400).json({
+      return res.status(400).json({
         message: "Please enter a valid email address.",
       })
-      return
     }
 
     const lyfterUserInDb = await LyfterUser.findOne({ email })
     if (lyfterUserInDb) {
-      res.status(400).json({ message: "Lyfter User already registered." })
-      return
+      return res
+        .status(400)
+        .json({ message: "Lyfter User already registered." })
     }
 
     const salt = bcrypt.genSaltSync(12)
@@ -88,20 +85,22 @@ export const postLoginController = async (req, res, next) => {
     const { password, email } = req.body
 
     if (!email || !password) {
-      res.status(400).json({ message: "all fields required (password & email)" })
-      return
+      return res
+        .status(400)
+        .json({ message: "all fields required (password & email)" })
     }
 
     const lyfterUserInDB = await LyfterUser.findOne({ email })
     if (!lyfterUserInDB) {
-      res.status(401).json({ message: "Lyfter User not found" })
-      return
+      return res.status(401).json({ message: "Lyfter User not found" })
     }
 
-    const isPasswordCorrect = bcrypt.compareSync(password, lyfterUserInDB.password)
+    const isPasswordCorrect = bcrypt.compareSync(
+      password,
+      lyfterUserInDB.password
+    )
     if (!isPasswordCorrect) {
-      res.status(400).json({ message: "Password not valid" })
-      return
+      return res.status(400).json({ message: "Password not valid" })
     }
 
     const userData = {
@@ -119,12 +118,14 @@ export const postLoginController = async (req, res, next) => {
       { algorithm: "HS256", expiresIn: "1h" }
     )
 
-    res.cookie("authToken", authToken, {
-      httpOnly: true,
-      maxAge: 36000000,
-      secure: true, //process.env.NODE_ENV === "production",
-      sameSite: 'none' //process.env.NODE_ENV === "production" ? "none" : "lax",
-    }).json({ message: "Lyfter account login successfully", user: userData })
+    res
+      .cookie("authToken", authToken, {
+        httpOnly: true,
+        maxAge: 36000000,
+        secure: true, //process.env.NODE_ENV === "production",
+        sameSite: "none", //process.env.NODE_ENV === "production" ? "none" : "lax",
+      })
+      .json({ message: "Lyfter account login successfully", user: userData })
   } catch (error) {
     res.status(500).json({ message: "Internal Server Error" })
   }

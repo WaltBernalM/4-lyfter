@@ -7,7 +7,8 @@ import {
 } from "../services/user.service.js"
 
 export const handleWebhook = async (req, res) => {
-  const stripeSecretKey = process.env.NODE_ENV == "production"
+  const stripeSecretKey =
+    process.env.NODE_ENV == "production"
       ? String(process.env.STRIPE_SECRET_KEY)
       : String(process.env.STRIPE_TEST_SECRET_KEY)
 
@@ -33,12 +34,15 @@ export const handleWebhook = async (req, res) => {
 
       if (!lyfterUserInDb) {
         console.log(`LyfterUser with id ${lyfterUserId} not found.`)
-        return res.status(400).send({ message: "User not found, cannot proceed to update payment" })
-        return
+        return res
+          .status(400)
+          .send({ message: "User not found, cannot proceed to update payment" })
       }
 
       await updateLyfterUserPaymentStatus(lyfterUserId, true)
-      console.log(`LyfterUser ${lyfterUserId}'s payment status updated to paid.`)
+      console.log(
+        `--> LyfterUser ${lyfterUserId}'s payment status updated to paid.`
+      )
     } catch (err) {
       console.error("Error updating payment status:", err)
       return res.status(500).send({ message: "Error updating payment status" })
