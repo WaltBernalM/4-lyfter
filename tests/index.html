@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stripe Payment</title>
+  <script src="https://js.stripe.com/v3/"></script> <!-- Stripe.js -->
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #f4f4f4;
+    }
+    .container {
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    button {
+      padding: 12px 24px;
+      font-size: 16px;
+      background-color: #0070f3;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #005bb5;
+    }
+    #card-element {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      margin: 10px 0;
+    }
+    #card-errors {
+      color: red;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Login and Pay</h1>
+    <div>
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <button id="loginButton">Login</button>
+    </div>
+    <div>
+      <p>Enter card details and click below to make a payment:</p>
+      <div id="card-element"></div>
+      <div id="card-errors" role="alert"></div>
+      <button id="payButton" disabled>Pay Now</button>
+    </div>
+  </div>
+
+  <script>
+    const stripe = Stripe(
+      'pk_test_51QLWVc09Wlnf5fV371hZjLSjlqeZBhd3aGSpherVn7BbfUfdS2X9M3WReBYrLBpEFFQVRROnuxjBjR0EImTZxUuw00vOVdxEAX'
+    )
+    
+    const elements = stripe.elements()
+    const cardElement = elements.create('card') // Create a Stripe Elements card input
+    cardElement.mount('#card-element') // Mount card input to the DOM
+
+    // Display card errors
+    cardElement.on('change', (event) => {
+      const displayError = document.getElementById('card-errors')
+      if (event.error) {
+        displayError.textContent = event.error.message
+      } else {
+        displayError.textContent = ''
+      }
+    })
+
+    let lyfterUserId = ""
+    // Login functionality
+    document.getElementById('loginButton').addEventListener('click', async () => {
+      const email = document.getElementById('email').value
+      const password = document.getElementById('password').value
+
+      const loginResponse = await fetch('http://localhost:5005/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include', // Include cookies
+        body: JSON.stringify({ email, password }),
+      })
+
+      const loginData = await loginResponse.json()
+
+      if (loginResponse.ok) {
+        alert("Login successful!")
+        document.getElementById('payButton').disabled = false // Enable Pay button after login
+        const { user: { id } }= loginData
+        lyfterUserId = id
+        console.log(lyfterUserId)
+      } else {
+        alert(`Login failed: ${loginData.message}`)
+      }
+    })
+
+    // Payment functionality
+    document.getElementById('payButton').addEventListener('click', async () => {
+      const response = await fetch('http://localhost:5005/api/payments/intent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include', // Include cookies
+        body: JSON.stringify({
+          amount: 5000, // in 5.00
+          currency: 'mxn',
+          lyfterUserId
+        })
+      })
+
+      const paymentIntent = await response.json()
+
+      if (paymentIntent.clientSecret) {
+        const { error, paymentIntent: confirmedPaymentIntent } = await stripe.confirmCardPayment(
+          paymentIntent.clientSecret,
+          {
+            payment_method: {
+              card: cardElement, // Use Stripe Elements card input
+            },
+          }
+        )
+
+        if (error) {
+          console.error("Error confirming payment: ", error.message)
+          document.getElementById('card-errors').textContent = error.message
+        } else if (confirmedPaymentIntent.status === 'succeeded') {
+          alert("Payment successful!")
+        }
+      } else {
+        alert("Payment intent creation failed.")
+      }
+    });
+  </script>
+
+</body>
+</html>

@@ -4,8 +4,11 @@ import Stripe from "stripe"
 import LyfterUser from "../models/LyfterUser.model.js"
 
 export const postPaymentIntent = async (req, res, next) => {
-  const stripeSecretKey = String(process.env.STRIPE_SECRET_KEY)
-  const stripe = new Stripe(stripeSecretKey)
+  const stripeSecretKey = process.env.NODE_ENV == 'production'
+    ? String(process.env.STRIPE_SECRET_KEY)
+    : String(process.env.STRIPE_TEST_SECRET_KEY)
+
+    const stripe = new Stripe(stripeSecretKey)
 
   const { amount, currency, lyfterUserId } = req.body
 

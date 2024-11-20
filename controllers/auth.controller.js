@@ -122,8 +122,8 @@ export const postLoginController = async (req, res, next) => {
     res.cookie("authToken", authToken, {
       httpOnly: true,
       maxAge: 36000000,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      secure: true, //process.env.NODE_ENV === "production",
+      sameSite: 'none' //process.env.NODE_ENV === "production" ? "none" : "lax",
     }).json({ message: "Lyfter account login successfully", user: userData })
   } catch (error) {
     res.status(500).json({ message: "Internal Server Error" })
