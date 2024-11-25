@@ -1,7 +1,10 @@
 // @ts-check
 
 import { Router } from "express"
-import { postCalculatorPaymentIntent } from "../controllers/payment.controller.js"
+import {
+  postCalculatorPaymentIntent,
+  getCalculatorPaymentPrice,
+} from "../controllers/payment.controller.js"
 import { isAuthenticated } from "../middleware/jwt.middleware.js"
 import { isAppPaid } from "../middleware/isAppPaid.js"
 
@@ -13,5 +16,7 @@ router.post(
   isAppPaid,
   postCalculatorPaymentIntent
 )
+
+router.get("/prices/calculator", getCalculatorPaymentPrice)
 
 export default router

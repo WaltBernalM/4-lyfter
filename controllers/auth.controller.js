@@ -21,14 +21,14 @@ export const postSignupController = async (req, res, next) => {
       return
     }
 
-    const passwordRegex = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}/
-    if (!passwordRegex.test(password)) {
-      return res.status(400).json({
-        message: `The password is too weak.
-        Must have at least 6 chars, must use uppercased,
-        and lowercased letters and have at least a number`,
-      })
-    }
+    // const passwordRegex = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}/
+    // if (!passwordRegex.test(password)) {
+    //   return res.status(400).json({
+    //     message: `The password is too weak.
+    //     Must have at least 6 chars, must use uppercased,
+    //     and lowercased letters and have at least a number`,
+    //   })
+    // }
 
     if (
       !String(email).endsWith("hotmail.com") &&
@@ -67,7 +67,7 @@ export const postSignupController = async (req, res, next) => {
     } = newLyfterUser
 
     res.status(201).json({
-      user: {
+      userData: {
         id,
         email: savedEmail,
         firstName: savedFirstName,
@@ -125,7 +125,7 @@ export const postLoginController = async (req, res, next) => {
         secure: true, //process.env.NODE_ENV === "production",
         sameSite: "none", //process.env.NODE_ENV === "production" ? "none" : "lax",
       })
-      .json({ message: "Lyfter account login successfully", user: userData })
+      .json({ message: "Lyfter account login successfully", userData })
   } catch (error) {
     res.status(500).json({ message: "Internal Server Error" })
   }

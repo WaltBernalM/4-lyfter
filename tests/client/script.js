@@ -34,7 +34,6 @@ document.getElementById('loginButton').addEventListener('click', async () => {
   if (loginResponse.ok) {
     alert("Login successful!")
     document.getElementById('payButton').disabled = false // Enable Pay button after login
-    const { user: { id } }= loginData
   } else {
     alert(`Login failed: ${loginData.message}`)
   }
@@ -46,7 +45,6 @@ document.getElementById('payButton').addEventListener('click', async () => {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include',
-    // body: JSON.stringify({ })
   })
 
   const paymentIntent = await response.json()

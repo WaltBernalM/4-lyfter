@@ -64,3 +64,36 @@ export const postCalculatorPaymentIntent = async (req, res, next) => {
       .send({ message: "Error at payment intent", error: e.message })
   }
 }
+
+
+export const getCalculatorPaymentPrice = async (req, res, next) => {
+  const stripeSecretKey =
+    process.env.NODE_ENV == "production"
+      ? String(process.env.STRIPE_SECRET_KEY)
+      : String(process.env.STRIPE_TEST_SECRET_KEY)
+
+  const stripe = new Stripe(stripeSecretKey)
+
+  try {
+    const productId = String(process.env.STRIPE_CALCULATOR_ID)
+    const productList = await stripe.products.list({ ids: [productId] })
+    const priceList = await stripe.prices.list({ product: productId, active: true })
+
+    const priceData = priceList.data[0]
+    const productData = productList.data[0]
+
+    const productBody = {
+      name: productData["name"],
+      description: productData["description"],
+      currency: priceData["currency"],
+      amount: (Number(priceData["unit_amount"]) / 100).toFixed(2)
+    }
+
+    res.status(200).json(productBody)
+  } catch (e) {
+    console.error("Error consulting calculator price:", e)
+    return res
+      .status(500)
+      .send({ message: "Error at price consulting", error: e.message })
+  }
+}
