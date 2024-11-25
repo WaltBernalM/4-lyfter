@@ -29,8 +29,8 @@ export const postCalculatorPaymentIntent = async (req, res, next) => {
     }
 
     const productId = process.env.NODE_ENV == "production"
-      ? String(process.env.STRIPE_PROD_CALCULATOR)
-      : String(process.env.STRIPE_TEST_CALCULATOR)
+      ? String(process.env.STRIPE_PROD_CALCULATOR_ID)
+      : String(process.env.STRIPE_TEST_CALCULATOR_ID)
 
     const priceList = await stripe.prices.list({
       product: productId,
@@ -79,8 +79,8 @@ export const getCalculatorPaymentPrice = async (req, res, next) => {
   try {
     const productId =
       process.env.NODE_ENV == "production"
-        ? String(process.env.STRIPE_PROD_CALCULATOR)
-        : String(process.env.STRIPE_TEST_CALCULATOR)
+        ? String(process.env.STRIPE_PROD_CALCULATOR_ID)
+        : String(process.env.STRIPE_TEST_CALCULATOR_ID)
 
     const productList = await stripe.products.list({ ids: [productId] })
     const priceList = await stripe.prices.list({ product: productId, active: true })
