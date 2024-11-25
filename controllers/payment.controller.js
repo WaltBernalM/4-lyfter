@@ -77,7 +77,11 @@ export const getCalculatorPaymentPrice = async (req, res, next) => {
   const stripe = new Stripe(stripeSecretKey)
 
   try {
-    const productId = String(process.env.STRIPE_CALCULATOR_ID)
+    const productId =
+      process.env.NODE_ENV == "production"
+        ? String(process.env.STRIPE_PROD_CALCULATOR)
+        : String(process.env.STRIPE_TEST_CALCULATOR)
+
     const productList = await stripe.products.list({ ids: [productId] })
     const priceList = await stripe.prices.list({ product: productId, active: true })
 
