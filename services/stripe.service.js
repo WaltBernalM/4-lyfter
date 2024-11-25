@@ -1,10 +1,13 @@
 import Stripe from "stripe"
 
+const getStripeKey = () => {
+  return process.env.NODE_ENV == "production"
+    ? String(process.env.STRIPE_SECRET_KEY)
+    : String(process.env.STRIPE_TEST_SECRET_KEY)
+}
+
 export const getStripeObject = () => {
-  const stripeSecretKey =
-    process.env.NODE_ENV == "production"
-      ? String(process.env.STRIPE_SECRET_KEY)
-      : String(process.env.STRIPE_TEST_SECRET_KEY)
+  const stripeSecretKey = getStripeKey()
   return new Stripe(stripeSecretKey)
 }
 
@@ -19,7 +22,9 @@ const createCustomer = async (email) => {
 const createInvoiceItem = async (customerId) => {
   const stripe = getStripeObject()
 
-  const productId = String(process.env.STRIPE_CALCULATOR_ID)
+  const productId = process.env.NODE_ENV === 'production'
+    ? String(process.env.STRIPE_PROD_CALCULATOR_ID)
+    : String(process.env.STRIPE_TEST_CALCULATOR_ID)
   const productList = await stripe.products.list({ ids: [productId] })
   const product = productList.data[0]
 

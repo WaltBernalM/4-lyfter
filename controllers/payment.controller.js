@@ -28,7 +28,9 @@ export const postCalculatorPaymentIntent = async (req, res, next) => {
         })
     }
 
-    const productId = String(process.env.STRIPE_CALCULATOR_ID)
+    const productId = process.env.NODE_ENV == "production"
+      ? String(process.env.STRIPE_PROD_CALCULATOR)
+      : String(process.env.STRIPE_TEST_CALCULATOR)
 
     const priceList = await stripe.prices.list({
       product: productId,
