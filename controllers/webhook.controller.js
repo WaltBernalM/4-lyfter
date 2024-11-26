@@ -8,7 +8,7 @@ import {
 
 export const handleWebhook = async (req, res) => {
   const stripeSecretKey =
-    process.env.NODE_ENV == "production"
+    process.env.STRIPE_ENV == "production"
       ? String(process.env.STRIPE_SECRET_KEY)
       : String(process.env.STRIPE_TEST_SECRET_KEY)
 

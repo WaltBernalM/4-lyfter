@@ -1,7 +1,7 @@
 import Stripe from "stripe"
 
 const getStripeKey = () => {
-  return process.env.NODE_ENV == "production"
+  return process.env.STRIPE_ENV == "production"
     ? String(process.env.STRIPE_SECRET_KEY)
     : String(process.env.STRIPE_TEST_SECRET_KEY)
 }

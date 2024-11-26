@@ -5,7 +5,7 @@ import LyfterUser from "../models/LyfterUser.model.js"
 
 export const postCalculatorPaymentIntent = async (req, res, next) => {
   const stripeSecretKey =
-    process.env.NODE_ENV == "production"
+    process.env.STRIPE_ENV == "production"
       ? String(process.env.STRIPE_SECRET_KEY)
       : String(process.env.STRIPE_TEST_SECRET_KEY)
 
@@ -28,7 +28,7 @@ export const postCalculatorPaymentIntent = async (req, res, next) => {
         })
     }
 
-    const productId = process.env.NODE_ENV == "production"
+    const productId = process.env.STRIPE_ENV == "production"
       ? String(process.env.STRIPE_PROD_CALCULATOR_ID)
       : String(process.env.STRIPE_TEST_CALCULATOR_ID)
 
@@ -70,7 +70,7 @@ export const postCalculatorPaymentIntent = async (req, res, next) => {
 
 export const getCalculatorPaymentPrice = async (req, res, next) => {
   const stripeSecretKey =
-    process.env.NODE_ENV == "production"
+    process.env.STRIPE_ENV == "production"
       ? String(process.env.STRIPE_SECRET_KEY)
       : String(process.env.STRIPE_TEST_SECRET_KEY)
 
@@ -78,7 +78,7 @@ export const getCalculatorPaymentPrice = async (req, res, next) => {
 
   try {
     const productId =
-      process.env.NODE_ENV == "production"
+      process.env.STRIPE_ENV == "production"
         ? String(process.env.STRIPE_PROD_CALCULATOR_ID)
         : String(process.env.STRIPE_TEST_CALCULATOR_ID)
 
