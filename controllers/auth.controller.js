@@ -44,7 +44,7 @@ export const postSignupController = async (req, res, next) => {
     const lyfterUserInDb = await LyfterUser.findOne({ email })
     if (lyfterUserInDb) {
       return res
-        .status(400)
+        .status(409)
         .json({ message: "Lyfter User already registered." })
     }
 
