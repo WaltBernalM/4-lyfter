@@ -100,7 +100,7 @@ export const postLoginController = async (req, res, next) => {
       lyfterUserInDB.password
     )
     if (!isPasswordCorrect) {
-      return res.status(400).json({ message: "Password not valid" })
+      return res.status(400).json({ message: "Email or Password not valid" })
     }
 
     const userData = {
@@ -127,7 +127,7 @@ export const postLoginController = async (req, res, next) => {
       })
       .json({ message: "Lyfter account login successfully", userData })
   } catch (error) {
-    res.status(500).json({ message: "Internal Server Error" })
+    res.status(500).json({ message: "Internal Server Error", error: error.message })
   }
 }
 

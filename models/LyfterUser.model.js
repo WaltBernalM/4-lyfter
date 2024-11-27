@@ -1,6 +1,5 @@
 import { Schema, model } from 'mongoose'
 
-// TODO: Please make sure you edit the User model to whatever makes sense in this case
 const lyfterUserSchema = new Schema(
   {
     email: {
@@ -37,6 +36,7 @@ const lyfterUserSchema = new Schema(
     deviceFingerprint: {
       type: String,
       required: [true, 'Device fingerprint is required.'],
+      trim: true,
       unique: true
     },
     isAppPaid: {
@@ -45,7 +45,6 @@ const lyfterUserSchema = new Schema(
     }
   },
   {
-    // this second object adds extra properties: `createdAt` and `updatedAt`    
     timestamps: true
   }
 )
