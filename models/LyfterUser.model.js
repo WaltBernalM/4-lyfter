@@ -1,28 +1,30 @@
-import { Schema, model } from 'mongoose'
+// @ts-check
+
+import { Schema, model } from "mongoose"
 
 const lyfterUserSchema = new Schema(
   {
     email: {
       type: String,
-      required: [true, 'Email is required.'],
+      required: [true, "Email is required."],
       unique: true,
       lowercase: true,
-      trim: true
+      trim: true,
     },
     password: {
       type: String,
-      required: [true, 'Password is required.'],
-      trim: true
+      required: [true, "Password is required."],
+      trim: true,
     },
     firstName: {
       type: String,
-      required: [true, 'First Name is required.'],
-      trim: true
+      required: [true, "First Name is required."],
+      trim: true,
     },
     lastName: {
       type: String,
-      required: [true, 'Last Name is required.'],
-      trim: true
+      required: [true, "Last Name is required."],
+      trim: true,
     },
     personalInfo: {
       type: Object,
@@ -30,22 +32,28 @@ const lyfterUserSchema = new Schema(
         age: null,
         height: null,
         weight: null,
-        fatPercentage: null
-      }
+        fatPercentage: null,
+      },
     },
     deviceFingerprint: {
       type: String,
-      required: [true, 'Device fingerprint is required.'],
+      required: [true, "Device fingerprint is required."],
       trim: true,
-      unique: true
+      unique: true,
     },
     isAppPaid: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
+    exerciseRoutines: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "ExerciseRoutine",
+      },
+    ],
   },
   {
-    timestamps: true
+    timestamps: true,
   }
 )
 

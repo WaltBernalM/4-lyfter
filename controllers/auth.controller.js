@@ -97,7 +97,19 @@ export const postLoginController = async (req, res, next) => {
         .json({ message: "all fields required (password & email)" })
     }
 
-    const lyfterUserInDB = await LyfterUser.findOne({ email })
+    const lyfterUserInDB = await LyfterUser
+      .findOne({ email })
+      .select("-password")
+      .populate({
+        path: "exerciseRoutines",
+        populate: {
+          path: "exerciseSets",
+          populate: [
+            { path: "exercise" }
+          ]
+        }
+      })
+
     if (!lyfterUserInDB) {
       return res.status(401).json({ message: "Lyfter User not found" })
     }
@@ -141,6 +153,20 @@ export const postLoginController = async (req, res, next) => {
 
 export const getVerifyController = async (req, res, next) => {
   try {
+    const { userData: { email, id } } = req.payload
+    const lyfterUserInDB = await LyfterUser.findOne({ email })
+      .select(["-password", "-deviceFingerprint", "-personalInfo"])
+      .populate({
+        path: "exerciseRoutines",
+        populate: {
+          path: "exerciseSets",
+          populate: [
+            { path: "exercise" }
+          ]
+        }
+      })
+
+    req.payload.userData = lyfterUserInDB
     res.status(200).json(req.payload)
   } catch (e) {
     console.error(`Error at verify: ${e.message}`)
