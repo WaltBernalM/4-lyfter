@@ -64,22 +64,18 @@ export const postSignupController = async (req, res, next) => {
       deviceFingerprint,
     })
 
-    const {
-      id: id,
-      email: savedEmail,
-      firstName: savedFirstName,
-      lastName: savedLastName,
-      isAppPaid: savedIsAppPaid,
-    } = newLyfterUser
+    const lyfterUserInDB = await LyfterUser.findOne({ email })
+      .select(["-password", "-deviceFingerprint", "-personalInfo"])
+      .populate({
+        path: "exerciseRoutines",
+        populate: {
+          path: "exerciseSets",
+          populate: [{ path: "exercise" }],
+        },
+      })
 
     res.status(201).json({
-      userData: {
-        id,
-        email: savedEmail,
-        firstName: savedFirstName,
-        lastName: savedLastName,
-        isAppPaid: savedIsAppPaid,
-      },
+      userData: lyfterUserInDB,
     })
   } catch (e) {
     console.error(`Error at signup: ${e.message}`)
