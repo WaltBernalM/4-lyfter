@@ -1,6 +1,6 @@
-
 import Exercise from "../models/Exercise.model.js"
-import exercisesSeeds from "../db/seeds/exercises.json"
+import { readFile } from "fs/promises"
+const exercisesSeeds = JSON.parse(await readFile(new URL("../db/seeds/exercises.json", import.meta.url)))
 
 export const populateExerciseDb = async () => {
 
