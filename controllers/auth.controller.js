@@ -97,17 +97,14 @@ export const postLoginController = async (req, res, next) => {
         .json({ message: "all fields required (password & email)" })
     }
 
-    const lyfterUserInDB = await LyfterUser
-      .findOne({ email })
-      .select("-password")
+    const lyfterUserInDB = await LyfterUser.findOne({ email })
+      .select(["-password", "-deviceFingerprint", "-personalInfo"])
       .populate({
         path: "exerciseRoutines",
         populate: {
           path: "exerciseSets",
-          populate: [
-            { path: "exercise" }
-          ]
-        }
+          populate: [{ path: "exercise" }],
+        },
       })
 
     if (!lyfterUserInDB) {
@@ -123,7 +120,7 @@ export const postLoginController = async (req, res, next) => {
     }
 
     const userData = {
-      id: lyfterUserInDB._id,
+      _id: lyfterUserInDB._id,
       email: lyfterUserInDB.email,
       firstName: lyfterUserInDB.firstName,
       lastName: lyfterUserInDB.lastName,
@@ -144,7 +141,7 @@ export const postLoginController = async (req, res, next) => {
         secure: true, //process.env.NODE_ENV === "production",
         sameSite: "none", //process.env.NODE_ENV === "production" ? "none" : "lax",
       })
-      .json({ message: "Lyfter account login successfully", userData })
+      .json({ message: "Lyfter account login successfully", userData: lyfterUserInDB })
   } catch (error) {
     console.error(`Error at login: ${error.message}`)
     res.status(500).json({ message: "Internal Server Error", error: error.message })
