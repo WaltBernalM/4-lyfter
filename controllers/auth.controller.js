@@ -76,6 +76,7 @@ export const postSignupController = async (req, res, next) => {
       },
     })
   } catch (e) {
+    console.error(`Error at signup: ${e.message}`)
     res.status(500).json({ message: "Error at signup", error: e.message })
   }
 }
@@ -127,6 +128,7 @@ export const postLoginController = async (req, res, next) => {
       })
       .json({ message: "Lyfter account login successfully", userData })
   } catch (error) {
+    console.error(`Error at login: ${error.message}`)
     res.status(500).json({ message: "Internal Server Error", error: error.message })
   }
 }
@@ -135,6 +137,7 @@ export const getVerifyController = async (req, res, next) => {
   try {
     res.status(200).json(req.payload)
   } catch (e) {
+    console.error(`Error at verify: ${e.message}`)
     res.status(500).json({ message: "Error at verification", error: e.message })
   }
 }
