@@ -9,10 +9,9 @@ export const postSignupController = async (req, res, next) => {
     const { firstName, lastName, password, email, deviceFingerprint } = req.body
 
     if (!firstName || !lastName || !email || !password || !deviceFingerprint) {
-      return res.status(400).json({
-        message:
-          "All fields required (firstName, lastName, email, password, deviceFingerprint)",
-      })
+      return res
+        .status(400)
+        .json({ message: "All fields required (firstName, lastName, email, password, deviceFingerprint)" })
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
@@ -46,6 +45,13 @@ export const postSignupController = async (req, res, next) => {
       return res
         .status(409)
         .json({ message: "Lyfter User already registered." })
+    }
+
+    const deviceFingerprintInDb = await LyfterUser.findOne({ deviceFingerprint })
+    if (deviceFingerprintInDb) {
+      return res
+        .status(409)
+        .json({ message: 'duplicated device fingerprint' })
     }
 
     const salt = bcrypt.genSaltSync(12)
