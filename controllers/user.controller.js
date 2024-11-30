@@ -33,15 +33,21 @@ export const patchUserUpdateController = async (req, res, next) => {
 
     let updatedUserLyfter = await lyfterUserInDb.save()
 
-    const userData = {
-      id: updatedUserLyfter._id,
-      email: updatedUserLyfter.email,
-      firstName: updatedUserLyfter.firstName,
-      lastName: updatedUserLyfter.lastName,
-      isAppPaid: updatedUserLyfter.isAppPaid,
-    }
+    const lyfterUserInDB = await LyfterUser.findOne({
+      email: updatedUserLyfter.firstName,
+    })
+      .select(["-password", "-deviceFingerprint", "-personalInfo"])
+      .populate({
+        path: "exerciseRoutines",
+        populate: {
+          path: "exerciseSets",
+          populate: [{ path: "exercise" }],
+        },
+      })
 
-    res.status(200).json({ message: "User updated successfully", userData })
+    res
+      .status(200)
+      .json({ message: "User updated successfully", userData: lyfterUserInDB })
   } catch (error) {
     res
       .status(500)
