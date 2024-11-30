@@ -1,7 +1,6 @@
-// @ts-check
 
 import Exercise from "../models/Exercise.model.js"
-const exercisesSeeds = await import("../db/seeds/exercises.json", { assert: { type: "json" } });
+import exercisesSeeds from "../db/seeds/exercises.json"
 
 export const populateExerciseDb = async () => {
 
