@@ -2,15 +2,7 @@
   "name": "four-lyfter-server",
   "version": "0.0.0",
   "private": true,
-  "type": "module",
-  "compilerOptions": {
-    "target": "ES6",
-    "module": "ESNext",
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "outDir": "./dist"
-  },
+    "type": "module",
   "include": [
     "./src/**/*"
   ],
