@@ -56,14 +56,13 @@ export const postSignupController = async (req, res, next) => {
 
     const salt = bcrypt.genSaltSync(12)
     const hashPassword = bcrypt.hashSync(password, salt)
-    const newLyfterUser = await LyfterUser.create({
+    await LyfterUser.create({
       email,
       password: hashPassword,
       firstName,
       lastName,
       deviceFingerprint,
     })
-
     const lyfterUserInDB = await LyfterUser.findOne({ email })
       .select(["-password", "-deviceFingerprint", "-personalInfo"])
       .populate({
@@ -94,7 +93,7 @@ export const postLoginController = async (req, res, next) => {
     }
 
     const lyfterUserInDB = await LyfterUser.findOne({ email })
-      .select(["-password", "-deviceFingerprint", "-personalInfo"])
+      .select(["-deviceFingerprint", "-personalInfo"])
       .populate({
         path: "exerciseRoutines",
         populate: {
@@ -111,6 +110,7 @@ export const postLoginController = async (req, res, next) => {
       password,
       lyfterUserInDB.password
     )
+
     if (!isPasswordCorrect) {
       return res.status(400).json({ message: "Email or Password not valid" })
     }
@@ -121,6 +121,10 @@ export const postLoginController = async (req, res, next) => {
       firstName: lyfterUserInDB.firstName,
       lastName: lyfterUserInDB.lastName,
       isAppPaid: lyfterUserInDB.isAppPaid,
+      createdAt: lyfterUserInDB.createdAt,
+      updatedAt: lyfterUserInDB.updatedAt,
+      __v: lyfterUserInDB.__v,
+      exerciseRoutines: lyfterUserInDB.exerciseRoutines
     }
 
     const secret = String(process.env.SECRET_KEY)
@@ -137,7 +141,7 @@ export const postLoginController = async (req, res, next) => {
         secure: true, //process.env.NODE_ENV === "production",
         sameSite: "none", //process.env.NODE_ENV === "production" ? "none" : "lax",
       })
-      .json({ message: "Lyfter account login successfully", userData: lyfterUserInDB })
+      .json({ message: "Lyfter account login successfully", userData })
   } catch (error) {
     console.error(`Error at login: ${error.message}`)
     res.status(500).json({ message: "Internal Server Error", error: error.message })
@@ -146,20 +150,6 @@ export const postLoginController = async (req, res, next) => {
 
 export const getVerifyController = async (req, res, next) => {
   try {
-    const { userData: { email, id } } = req.payload
-    const lyfterUserInDB = await LyfterUser.findOne({ email })
-      .select(["-password", "-deviceFingerprint", "-personalInfo"])
-      .populate({
-        path: "exerciseRoutines",
-        populate: {
-          path: "exerciseSets",
-          populate: [
-            { path: "exercise" }
-          ]
-        }
-      })
-
-    req.payload.userData = lyfterUserInDB
     res.status(200).json(req.payload)
   } catch (e) {
     console.error(`Error at verify: ${e.message}`)
