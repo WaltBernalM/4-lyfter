@@ -19,6 +19,8 @@ app.use("/api", express.json(), indexRoutes)
 import authRoutes from "./routes/auth.routes.js"
 app.use("/auth", express.json(), authRoutes)
 
+app.get("/", (req, res) => { res.json({ message: "Welcome to Four Lyfter Server!" }) })
+
 import errorHandling from "./error-handling/index.js"
 errorHandling(app)
 
