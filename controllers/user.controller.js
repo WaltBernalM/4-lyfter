@@ -6,7 +6,7 @@ import LyfterUser from "../models/LyfterUser.model.js"
 export const patchUserUpdateController = async (req, res, next) => {
   const { firstName, lastName, password } = req.body
 
-  const lyfterUserId = req.payload.userData.id
+  const lyfterUserId = req.payload.userData._id
   if (!lyfterUserId) {
     return res.status(400).json({ message: "Missing user data from token" })
   }
