@@ -97,10 +97,7 @@ export const getExerciseSetById = async (req, res) => {
     }
 
     const isAssignedToUser = JSON.parse(JSON.stringify(lyfterUserInDb))
-      .workouts.some(workout => workout.exerciseSets.some(exerciseSet => {
-        console.log(exerciseSet)
-        return exerciseSet._id === exerciseSetId
-      }))
+      .workouts.some(workout => workout.exerciseSets.some(exerciseSet => exerciseSet._id === exerciseSetId))
     if (!isAssignedToUser) {
       console.warn(`User ${lyfterUserId} tried to access/modify another user information`)
       return res.status(403).json({ message: "Access Forbidden" })
