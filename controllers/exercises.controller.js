@@ -57,6 +57,10 @@ export const getAllExercises = async (req, res, next) => {
       allExercises = await Exercise.find(searchQuery)
     }
 
+    if (allExercises.length === 0) {
+      return res.status(400).json({ message: "Search had no results."})
+    }
+
     res.status(200).json({ allExercises })
   } catch (error) {
     res
