@@ -3,8 +3,10 @@
 import LyfterUser from "../models/LyfterUser.model.js"
 import mongoose from "mongoose"
 import Workout from "../models/Workout.model.js"
+import ExerciseSet from "../models/ExerciseSet.model.js"
+import Set from "../models/Set.model.js"
 
-export const postNewWorkout = async (req, res, next) => {
+export const postNewWorkout = async (req, res) => {
   try {
     const lyfterUserId = req.payload.userData._id
     if (!lyfterUserId) {
@@ -87,7 +89,7 @@ export const postNewWorkout = async (req, res, next) => {
   }
 }
 
-export const getWorkouts = async (req, res, next) => {
+export const getWorkouts = async (req, res) => {
   try {
     const lyfterUserId = req.payload.userData._id
     if (!lyfterUserId) {
@@ -122,7 +124,7 @@ export const getWorkouts = async (req, res, next) => {
   }
 }
 
-export const getWorkoutById = async (req, res, next) => {
+export const getWorkoutById = async (req, res) => {
   try {
     const lyfterUserId = req.payload.userData._id
     if (!lyfterUserId) {
@@ -173,7 +175,7 @@ export const getWorkoutById = async (req, res, next) => {
   }
 }
 
-export const patchWorkout = async (req, res) => {
+export const patchWorkoutById = async (req, res) => {
   try {
     const lyfterUserId = req.payload.userData._id
     if (!lyfterUserId) {
@@ -253,6 +255,77 @@ export const patchWorkout = async (req, res) => {
     }
     res.status(500).json({
       message: "updateWorkout - Internal Server Error",
+      error: error.message,
+    })
+  }
+}
+
+export const deleteWorkoutById = async (req, res) => {
+  try {
+    const lyfterUserId = req.payload.userData._id
+    if (!lyfterUserId) {
+      return res
+        .status(404)
+        .json({ message: "Missing user data from the token" })
+    }
+
+    const { workoutId } = req.params
+    if (!workoutId) {
+      return res
+        .status(404)
+        .json({ message: "workoutId is a required parameter" })
+    }
+
+    const lyfterUserInDb = await LyfterUser.findById(lyfterUserId).populate({
+      path: "workouts",
+    })
+    if (!lyfterUserInDb) {
+      return res.status(404).json({ message: "User not found" })
+    }
+
+    const userWorkoutIds = JSON.parse(
+      JSON.stringify(lyfterUserInDb)
+    ).workouts.map((workout) => workout._id)
+    if (!userWorkoutIds.includes(workoutId)) {
+      console.warn(
+        `User ${lyfterUserId} tried to access/modify another user information`
+      )
+      return res.status(403).json({ message: "Access Forbidden" })
+    }
+
+    const workoutToDelete = await Workout.findById(workoutId).populate({
+      path: "exerciseSets",
+      populate: [{ path: "sets" }],
+    })
+    if (!workoutToDelete) {
+      return res.status(404).json({ message: "Workout not found" })
+    }
+
+    const exerciseSetIdsToDelete = workoutToDelete.exerciseSets.map(
+      (exerciseSet) => exerciseSet._id
+    )
+    const setIdsToDelete = workoutToDelete.exerciseSets
+      .flatMap((exerciseSet) => exerciseSet["sets"])
+      .map((set) => set._id)
+
+    await Set.deleteMany({ _id: { $in: setIdsToDelete } })
+    await ExerciseSet.deleteMany({ _id: { $in: exerciseSetIdsToDelete } })
+
+    await LyfterUser.findByIdAndUpdate(
+      lyfterUserId,
+      { $pull: { workouts: workoutId } },
+      { new: true }
+    )
+
+    await Workout.findByIdAndDelete(workoutId)
+
+    return res.status(204).send()
+  } catch (error) {
+    if (error instanceof mongoose.Error.ValidationError) {
+      return res.status(400).json({ message: "Model error", error })
+    }
+    res.status(500).json({
+      message: "deleteWorkout - Internal Server Error",
       error: error.message,
     })
   }

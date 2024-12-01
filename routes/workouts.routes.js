@@ -1,13 +1,14 @@
 // @ts-check
 
 import { Router } from "express"
+import { isAuthenticated } from "../middleware/jwt.middleware.js"
 import {
+  deleteWorkoutById,
   getWorkoutById,
   getWorkouts,
-  patchWorkout,
+  patchWorkoutById,
   postNewWorkout,
 } from "../controllers/workouts.controller.js"
-import { isAuthenticated } from "../middleware/jwt.middleware.js"
 
 const router = Router()
 
@@ -17,6 +18,8 @@ router.get("/", isAuthenticated, getWorkouts)
 
 router.get("/:workoutId", isAuthenticated, getWorkoutById)
 
-router.patch("/:workoutId", isAuthenticated, patchWorkout)
+router.patch("/:workoutId", isAuthenticated, patchWorkoutById)
+
+router.delete("/:workoutId", isAuthenticated, deleteWorkoutById)
 
 export default router
