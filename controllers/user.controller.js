@@ -36,7 +36,7 @@ export const patchUserUpdateController = async (req, res, next) => {
     const lyfterUserInDB = await LyfterUser.findOne({
       email: updatedUserLyfter.firstName,
     })
-      .select(["-password", "-deviceFingerprint", "-personalInfo"])
+      .select(["-password", "-personalInfo"])
       .populate({
         path: "exerciseRoutines",
         populate: {

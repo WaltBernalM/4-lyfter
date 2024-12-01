@@ -12,7 +12,7 @@ export const postCalculatorPaymentIntent = async (req, res, next) => {
   const stripe = new Stripe(stripeSecretKey)
 
   try {
-    const lyfterUserId = req.payload.userData.id
+    const lyfterUserId = req.payload.userData._id
     if (!lyfterUserId) {
       return res
         .status(400)

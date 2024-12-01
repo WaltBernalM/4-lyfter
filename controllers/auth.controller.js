@@ -64,7 +64,7 @@ export const postSignupController = async (req, res, next) => {
       deviceFingerprint,
     })
     const lyfterUserInDB = await LyfterUser.findOne({ email })
-      .select(["-password", "-deviceFingerprint", "-personalInfo"])
+      .select(["-password", "-personalInfo"])
       .populate({
         path: "exerciseRoutines",
         populate: {
@@ -123,8 +123,6 @@ export const postLoginController = async (req, res, next) => {
       isAppPaid: lyfterUserInDB.isAppPaid,
       createdAt: lyfterUserInDB.createdAt,
       updatedAt: lyfterUserInDB.updatedAt,
-      __v: lyfterUserInDB.__v,
-      exerciseRoutines: lyfterUserInDB.exerciseRoutines
     }
 
     const secret = String(process.env.SECRET_KEY)
@@ -150,6 +148,19 @@ export const postLoginController = async (req, res, next) => {
 
 export const getVerifyController = async (req, res, next) => {
   try {
+    // const { payload: { userData: { email } } } = req
+
+    // const lyfterUserInDB = await LyfterUser.findOne({ email })
+    //   .select(["-password", "-deviceFingerprint", "-personalInfo"])
+    //   .populate({
+    //     path: "exerciseRoutines",
+    //     populate: {
+    //       path: "exerciseSets",
+    //       populate: [{ path: "exercise" }],
+    //     },
+    //   })
+
+    // req.payload.userData = lyfterUserInDB
     res.status(200).json(req.payload)
   } catch (e) {
     console.error(`Error at verify: ${e.message}`)
