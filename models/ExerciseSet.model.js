@@ -4,26 +4,25 @@ import { Schema, model } from "mongoose"
 
 const exerciseSetSchema = new Schema(
   {
-    intensity: {
+    order: {
       type: Number,
-      required: [true, "intensity is a rqeuired property"],
-    },
-    series: {
-      type: Number,
-      required: [true, "series is a required property"],
-      default: 5,
-    },
-    reps: {
-      type: Number,
-      required: [true, "reps is a required property"],
-      default: 12,
+      unique: true,
     },
     exercise: {
       type: Schema.Types.ObjectId,
-      ref: "Exercise",
-    }
+      ref: 'Exercise',
+      required: [true, "is required"],
+    },
+    sets: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Set"
+      }
+    ]
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 )
 
 const ExerciseSet = model("ExerciseSet", exerciseSetSchema)

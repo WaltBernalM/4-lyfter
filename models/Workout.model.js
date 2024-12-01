@@ -2,11 +2,11 @@
 
 import { Schema, model } from "mongoose"
 
-const exerciseRoutineSchema = new Schema(
+const workoutSchema = new Schema(
   {
     title: {
       type: String,
-      unique: true,
+      required: true,
       trim: true
     },
     order: {
@@ -25,6 +25,6 @@ const exerciseRoutineSchema = new Schema(
   }
 )
 
-const ExerciseRoutine = model("ExerciseRoutine", exerciseRoutineSchema)
+const Workout = model("Workout", workoutSchema)
 
-export default ExerciseRoutine
+export default Workout

@@ -45,10 +45,10 @@ const lyfterUserSchema = new Schema(
       type: Boolean,
       default: false,
     },
-    exerciseRoutines: [
+    workouts: [
       {
         type: Schema.Types.ObjectId,
-        ref: "ExerciseRoutine",
+        ref: "Workout",
       },
     ],
   },

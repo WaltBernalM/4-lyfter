@@ -38,11 +38,14 @@ export const patchUserUpdateController = async (req, res, next) => {
     })
       .select(["-password", "-personalInfo"])
       .populate({
-        path: "exerciseRoutines",
+        path: "workouts",
         populate: {
           path: "exerciseSets",
-          populate: [{ path: "exercise" }],
-        },
+          populate: [
+            { path: "exercise" },
+            { path: 'sets'}
+          ]
+        }
       })
 
     res

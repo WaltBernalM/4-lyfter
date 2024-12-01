@@ -66,10 +66,13 @@ export const postSignupController = async (req, res, next) => {
     const lyfterUserInDB = await LyfterUser.findOne({ email })
       .select(["-password", "-personalInfo"])
       .populate({
-        path: "exerciseRoutines",
+        path: "workouts",
         populate: {
           path: "exerciseSets",
-          populate: [{ path: "exercise" }],
+          populate: [
+            { path: "exercise" },
+            { path: 'sets' }
+          ]
         },
       })
 
@@ -95,10 +98,13 @@ export const postLoginController = async (req, res, next) => {
     const lyfterUserInDB = await LyfterUser.findOne({ email })
       .select(["-deviceFingerprint", "-personalInfo"])
       .populate({
-        path: "exerciseRoutines",
+        path: "workouts",
         populate: {
           path: "exerciseSets",
-          populate: [{ path: "exercise" }],
+          populate: [
+            { path: "exercise" },
+            { path: 'sets'}
+          ]
         },
       })
 

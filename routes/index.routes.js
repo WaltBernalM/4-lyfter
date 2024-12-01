@@ -1,9 +1,10 @@
 import { Router } from "express"
 import paymentRoutes from "./payment.routes.js"
 import userRoutes from "./user.routes.js"
-import exercisesRoutes from './execises.routes.js'
-import exercieSetsRoutes from './exerciseSets.routes.js'
-import exerciseRoutinesRoutes from './exerciseRoutines.routes.js'
+import exerciseRoutes from './execises.routes.js'
+import setRoutes from './sets.routes.js'
+import workoutRoutes from './workouts.routes.js'
+import exerciseSetRoutes from './exerciseSet.routes.js'
 
 const router = Router()
 
@@ -15,10 +16,12 @@ router.use("/users", userRoutes)
 
 router.use("/payments", paymentRoutes)
 
-router.use('/exercises', exercisesRoutes)
+router.use("/workouts", workoutRoutes)
 
-router.use("/sets", exercieSetsRoutes)
+router.use('/exerciseSets', exerciseSetRoutes)
 
-router.use('/routines', exerciseRoutinesRoutes)
+router.use('/exercises', exerciseRoutes)
+
+router.use("/sets", setRoutes)
 
 export default router
