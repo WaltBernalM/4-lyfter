@@ -266,7 +266,7 @@ export const deleteExerciseSetById = async (req, res) => {
 
     await ExerciseSet.findByIdAndDelete(exerciseSetId)
 
-    return res.status(204).send()
+    res.status(204).send()
   } catch (error) {
     console.error(`deleteExerciseSetById: ${error.message}`)
 

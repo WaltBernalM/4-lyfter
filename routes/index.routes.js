@@ -23,6 +23,6 @@ router.use('/exerciseSets', isAuthenticated, exerciseSetRoutes)
 
 router.use('/exercises', exerciseRoutes)
 
-router.use("/sets", setRoutes)
+router.use("/sets", isAuthenticated, setRoutes)
 
 export default router

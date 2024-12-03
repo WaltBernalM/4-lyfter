@@ -1,11 +1,14 @@
 import { Router } from "express"
-import { isAuthenticated } from "../middleware/jwt.middleware.js"
-import { getSetById, postNewSet } from "../controllers/sets.controller.js"
+import { deleteSetbyId, getSetById, patchSetById, postNewSet } from "../controllers/sets.controller.js"
 
 const router = Router()
 
-router.post("/", isAuthenticated, postNewSet)
+router.post("/", postNewSet)
 
-router.get("/:setId", isAuthenticated, getSetById)
+router.get("/:setId", getSetById)
+
+router.patch("/:setId", patchSetById)
+
+router.delete("/:setId", deleteSetbyId)
 
 export default router
