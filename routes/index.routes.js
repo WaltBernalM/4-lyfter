@@ -1,4 +1,5 @@
 import { Router } from "express"
+import { isAuthenticated } from "../middleware/jwt.middleware.js"
 import paymentRoutes from "./payment.routes.js"
 import userRoutes from "./user.routes.js"
 import exerciseRoutes from './execises.routes.js'
@@ -16,9 +17,9 @@ router.use("/users", userRoutes)
 
 router.use("/payments", paymentRoutes)
 
-router.use("/workouts", workoutRoutes)
+router.use("/workouts", isAuthenticated, workoutRoutes)
 
-router.use('/exerciseSets', exerciseSetRoutes)
+router.use('/exerciseSets', isAuthenticated, exerciseSetRoutes)
 
 router.use('/exercises', exerciseRoutes)
 

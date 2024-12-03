@@ -12,14 +12,14 @@ import {
 
 const router = Router()
 
-router.post("/", isAuthenticated, postNewWorkout)
+router.post("/", postNewWorkout)
 
-router.get("/", isAuthenticated, getWorkouts)
+router.get("/", getWorkouts)
 
-router.get("/:workoutId", isAuthenticated, getWorkoutById)
+router.get("/:workoutId", getWorkoutById)
 
-router.patch("/:workoutId", isAuthenticated, patchWorkoutById)
+router.patch("/:workoutId", patchWorkoutById)
 
-router.delete("/:workoutId", isAuthenticated, deleteWorkoutById)
+router.delete("/:workoutId", deleteWorkoutById)
 
 export default router

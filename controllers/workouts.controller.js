@@ -218,7 +218,11 @@ export const patchWorkoutById = async (req, res) => {
         workout => workout['order'] === order && workout._id.toString() !== workoutId
       )
       if (conflictWorkout) {
-        await Workout.findByIdAndUpdate(conflictWorkout._id, { order: targetWorkout['order'] })
+        await Workout.findByIdAndUpdate(
+          conflictWorkout._id,
+          { order: targetWorkout["order"] },
+          { new: true }
+        )
       }
     }
 
@@ -250,11 +254,12 @@ export const patchWorkoutById = async (req, res) => {
     res.status(200).json({ workouts: clonedUpdatedLyfterUser.workouts })
 
   } catch (error) {
+    console.error(`updateWorkoutById: ${error.message}`)
     if (error instanceof mongoose.Error.ValidationError) {
       return res.status(400).json({ message: "Model error", error })
     }
     res.status(500).json({
-      message: "updateWorkout - Internal Server Error",
+      message: "patchWorkoutById - Internal Server Error",
       error: error.message,
     })
   }

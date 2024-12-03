@@ -6,7 +6,6 @@ const exerciseSetSchema = new Schema(
   {
     order: {
       type: Number,
-      unique: true,
     },
     exercise: {
       type: Schema.Types.ObjectId,
