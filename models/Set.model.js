@@ -14,7 +14,10 @@ const setSchema = new Schema(
     },
     units: {
       type: String,
-      enum: ["kg", "lb"],
+      enum: {
+        values: ["kg", "lb"],
+        message: "units must be kg or lb"
+      },
       required: [true, "units is a required property (kg, lb)"],
       default: 'lb'
     },
@@ -22,11 +25,13 @@ const setSchema = new Schema(
       type: Number,
       required: [true, "series is a required property"],
       default: 5,
+      min: 1
     },
     reps: {
       type: Number,
       required: [true, "reps is a required property"],
       default: 12,
+      min: 1 
     },
     intensity: {
       type: Number,

@@ -51,6 +51,20 @@ const lyfterUserSchema = new Schema(
         ref: "Workout",
       },
     ],
+    standardMode: {
+      type: Boolean,
+      required: [true, "Standard Mode is required."],
+      default: false
+    },
+    discCalibers: {
+      type: [Number],
+      enum: {
+        values: [45, 35, 25, 20, 15, 10, 5, 2.5, 1.25],
+        message: "Invalid disc caliber value. Allowed values are 45, 35, 25, 20, 15, 10, 5, 2.5, 1.25."
+      },
+      required: [true, "discCalibers is required"],
+      default: [45, 25, 10, 5, 2.5]
+    }
   },
   {
     timestamps: true,
