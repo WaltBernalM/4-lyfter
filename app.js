@@ -25,3 +25,6 @@ import errorHandling from "./error-handling/index.js"
 errorHandling(app)
 
 export default app
+
+// TODO: Create a view where user can input the session goal (bench, dead or squat) and the app generates the progression sets so as provides the option to try a 1mr
+// TODO: Save the history of that session

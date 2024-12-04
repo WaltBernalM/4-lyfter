@@ -3,6 +3,9 @@
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
 import LyfterUser from "../models/LyfterUser.model.js"
+import ExerciseSet from "../models/ExerciseSet.model.js"
+import Workout from "../models/Workout.model.js"
+import Exercise from "../models/Exercise.model.js"
 
 export const postSignupController = async (req, res, next) => {
   try {
@@ -56,25 +59,28 @@ export const postSignupController = async (req, res, next) => {
 
     const salt = bcrypt.genSaltSync(12)
     const hashPassword = bcrypt.hashSync(password, salt)
-    await LyfterUser.create({
+    const newLyfterUser = await LyfterUser.create({
       email,
       password: hashPassword,
       firstName,
       lastName,
       deviceFingerprint,
     })
-    const lyfterUserInDB = await LyfterUser.findOne({ email })
+
+    await createBasicWorkoutsAtSignup(newLyfterUser._id)
+
+    const lyfterUserInDB = await LyfterUser.findById(newLyfterUser._id)
       .select(["-password", "-personalInfo"])
       .populate({
         path: "workouts",
         populate: {
           path: "exerciseSets",
-          populate: [
-            { path: "exercise" },
-            { path: 'sets' }
-          ]
+          populate: [{ path: "exercise" }, { path: "sets" }],
         },
       })
+    if (!lyfterUserInDB) {
+      return res.status(404).json({ message: 'something went wrong, user not created' })
+    }
 
     res.status(201).json({
       userData: lyfterUserInDB,
@@ -172,4 +178,51 @@ export const getVerifyController = async (req, res, next) => {
     console.error(`Error at verify: ${e.message}`)
     res.status(500).json({ message: "Error at verification", error: e.message })
   }
+}
+
+
+const createBasicWorkoutsAtSignup = async (lyfterUserId) => {
+  try {
+    await createBasicWorkout(1, 'Squat Day', lyfterUserId, 'barbell squat')
+
+    await createBasicWorkout(2, "Deadlift Day", lyfterUserId, "barbell deadlift")
+
+    await createBasicWorkout(3, 'Bench Press Day', lyfterUserId, 'barbell bench press - medium grip')
+
+  } catch (error) {
+    console.log(`error at creating basic workouts: ${error.message}`)
+    throw new Error(error.message)
+  }
+}
+
+const createBasicWorkout = async (workoutOrder, workoutTitle, lyfterUserId, exerciseName) => {
+  const exercise = await Exercise.findOne({ name: { $regex: exerciseName, $options: "i" } })
+  if (!exercise) {
+    throw new Error(`Couldn't find ${exerciseName}`)
+  }
+
+  const workout = await Workout.create({ order: workoutOrder, title: workoutTitle })
+  if (!workout) {
+    throw new Error(`Couldn't create basic workout ${workoutTitle}`)
+  }
+
+  await LyfterUser.findByIdAndUpdate(
+    lyfterUserId,
+    { $push: { workouts: workout._id } },
+    { new: true }
+  )
+
+  const exerciseSet = await (await ExerciseSet.create({ order: 1, exercise: exercise._id })).populate([
+      { path: 'exercise' },
+      { path: 'sets' }
+    ])
+  if (!exerciseSet) {
+    throw new Error(`Couldn't create basic exerciseSet`)
+  }
+
+  await Workout.findByIdAndUpdate(
+    workout._id,
+    { $push: { exerciseSets: exerciseSet._id } },
+    { new: true }
+  )
 }
