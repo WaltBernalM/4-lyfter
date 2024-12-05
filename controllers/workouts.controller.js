@@ -5,6 +5,7 @@ import mongoose from "mongoose"
 import Workout from "../models/Workout.model.js"
 import ExerciseSet from "../models/ExerciseSet.model.js"
 import Set from "../models/Set.model.js"
+import { estimateSessionWorkout } from "../services/workout.service.js"
 
 export const postNewWorkout = async (req, res) => {
   try {
@@ -333,5 +334,85 @@ export const deleteWorkoutById = async (req, res) => {
       message: "deleteWorkout - Internal Server Error",
       error: error.message,
     })
+  }
+}
+
+export const postEstimateWorkoutGoal = async (req, res) => {
+  try {
+    const lyfterUserId = req.payload.userData._id
+    if (!lyfterUserId) {
+      return res.status(404).json({ message: "Missing user data from the token" })
+    }
+
+    const { workoutId } = req.params
+    if (!workoutId) {
+      return res.status(404).json({ message: "workoutId is a required parameter" })
+    }
+
+    const { goalWeight, goalReps, include1MR, units } = req.body
+    if (!goalWeight || !goalReps || include1MR === undefined || include1MR === null || (units !== 'lb' && units !== 'kg')) {
+      return res.status(404).json({ message: "goalWeight, goalReps, include1MR and units (lb or kg) are required fields" })
+    }
+
+    const lyfterUserInDb = await LyfterUser.findById(lyfterUserId).populate({
+      path: "workouts",
+    })
+    if (!lyfterUserInDb) {
+      return res.status(404).json({ message: "User not found" })
+    }
+
+    const userWorkoutIds = JSON.parse(JSON.stringify(lyfterUserInDb)).workouts.map(workout => workout._id)
+    if (!userWorkoutIds.includes(workoutId)) {
+      console.warn(
+        `User ${lyfterUserId} tried to access/modify another user information`
+      )
+      return res.status(403).json({ message: "Access Forbidden" })
+    }
+
+    const userWorkout = await Workout.findById(workoutId)
+      .populate({ path: 'exerciseSets', populate: [ { path: 'sets' }, { path: 'exercise'} ] })
+    if (!userWorkout) {
+      return res.status(404).json({ message: "Workout not found" })
+    }
+
+    const exerciseSetLength = JSON.parse(JSON.stringify(userWorkout.exerciseSets)).length
+    if (exerciseSetLength !== 1) {
+      return res.status(404).json({ message: "Cannot generate if user has more than one ExerciseSet" })
+    }
+
+    let exerciseSetId
+    userWorkout.exerciseSets.forEach(exerciseSet => exerciseSetId = exerciseSet._id)
+    if (!exerciseSetId) {
+      return res.status(404).json({ message: "Not able to identify Exercise Set Id" })
+    }
+
+    const estimatedSets = estimateSessionWorkout(goalWeight, goalReps, include1MR, units)
+
+    await ExerciseSet.findByIdAndUpdate(
+      exerciseSetId,
+      { $set: { sets: [] } },
+      { new: true }
+    )
+
+    for (const estimatedSet of estimatedSets.sets) {
+      const { order, weight, units, reps } = JSON.parse(JSON.stringify(estimatedSet))
+
+      const newSet = await Set.create({ order, weight, units, intensity: 1, series: 1, reps })
+
+      await ExerciseSet.findByIdAndUpdate(
+        exerciseSetId,
+        { $push: { sets: newSet._id } },
+        { new: true }
+      )
+    }
+
+    const updatedUserWorkout = await Workout.findById(workoutId).populate({
+      path: "exerciseSets",
+      populate: [{ path: "sets" }, { path: "exercise" }],
+    })
+
+    res.status(200).json({ workout: updatedUserWorkout })
+  } catch (error) {
+    res.status(500).send()
   }
 }

@@ -6,6 +6,7 @@ import {
   getWorkoutById,
   getWorkouts,
   patchWorkoutById,
+  postEstimateWorkoutGoal,
   postNewWorkout,
 } from "../controllers/workouts.controller.js"
 
@@ -20,5 +21,7 @@ router.get("/:workoutId", getWorkoutById)
 router.patch("/:workoutId", patchWorkoutById)
 
 router.delete("/:workoutId", deleteWorkoutById)
+
+router.post('/:workoutId', postEstimateWorkoutGoal)
 
 export default router

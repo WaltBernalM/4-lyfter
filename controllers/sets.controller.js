@@ -10,7 +10,7 @@ export const postNewSet = async (req, res, next) => {
     const { order, weight, units, intensity, series, reps, exerciseSetId } = req.body
     if (!order || !weight || !units || !series || !reps || !intensity || !exerciseSetId) {
       return res.status(400).json({
-        message: "order, weight, intensity, resiers and reps are required",
+        message: "order, weight, intensity, units, series and reps are required",
       })
     }
 
