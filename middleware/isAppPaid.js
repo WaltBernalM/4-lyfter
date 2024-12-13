@@ -5,7 +5,7 @@ import LyfterUser from "../models/LyfterUser.model.js"
 export const isAppPaid = async (req, res, next) => {
   try {
     const userData = req.payload.userData
-    const { id: lyfterUserId } = userData
+    const { _id: lyfterUserId } = userData
 
     const lyfterUserInDb = await LyfterUser.findById(lyfterUserId)
     if (!lyfterUserInDb) {
