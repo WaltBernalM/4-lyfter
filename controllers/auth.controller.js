@@ -206,11 +206,14 @@ const createBasicWorkout = async (workoutOrder, workoutTitle, lyfterUserId, exer
     throw new Error(`Couldn't create basic workout ${workoutTitle}`)
   }
 
-  await LyfterUser.findByIdAndUpdate(
+  const updatedLyfterUser = await LyfterUser.findByIdAndUpdate(
     lyfterUserId,
     { $push: { workouts: workout._id } },
     { new: true }
   )
+  if (!updatedLyfterUser) {
+    throw new Error(`User ${lyfterUserId} not updated`)
+  }
 
   const exerciseSet = await (await ExerciseSet.create({ order: 1, exercise: exercise._id })).populate([
       { path: 'exercise' },
@@ -220,9 +223,12 @@ const createBasicWorkout = async (workoutOrder, workoutTitle, lyfterUserId, exer
     throw new Error(`Couldn't create basic exerciseSet`)
   }
 
-  await Workout.findByIdAndUpdate(
+  const updatedWorkout = await Workout.findByIdAndUpdate(
     workout._id,
     { $push: { exerciseSets: exerciseSet._id } },
     { new: true }
   )
+  if (!updatedWorkout) {
+    throw new Error(`Couldn't update existing workout: ${workout._id}`)
+  }
 }
