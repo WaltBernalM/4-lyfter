@@ -360,6 +360,9 @@ export const postEstimateWorkoutGoal = async (req, res) => {
     if (!lyfterUserInDb) {
       return res.status(404).json({ message: "User not found" })
     }
+    if (!lyfterUserInDb.isAppPaid) {
+      return res.status(402).json({ message: 'user has not paid app' })
+    }
 
     const userWorkoutIds = JSON.parse(JSON.stringify(lyfterUserInDb)).workouts.map(workout => workout._id)
     if (!userWorkoutIds.includes(workoutId)) {
