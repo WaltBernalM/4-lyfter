@@ -81,8 +81,7 @@ export const postNewWorkout = async (req, res) => {
     if (error instanceof mongoose.Error.ValidationError) {
       return res.status(400).json({ message: "Model error", error })
     }
-    res
-      .status(500)
+    res.status(500)
       .json({
         message: "postNewWorkout - Internal Server Error",
         error: error.message,
@@ -338,6 +337,7 @@ export const deleteWorkoutById = async (req, res) => {
 }
 
 export const postEstimateWorkoutGoal = async (req, res) => {
+  console.log(`postEtimateWorkoutGoal(req=${req.params})`)
   try {
     const lyfterUserId = req.payload.userData._id
     if (!lyfterUserId) {
@@ -390,6 +390,13 @@ export const postEstimateWorkoutGoal = async (req, res) => {
     }
 
     const estimatedSets = estimateSessionWorkout(goalWeight, goalReps, include1MR, units)
+
+    const exerciseSet = await ExerciseSet.findById(exerciseSetId)
+    if (exerciseSet && exerciseSet.sets.length) {
+      for (const set of exerciseSet.sets) {
+        await Set.findByIdAndDelete(set._id)
+      }
+    }
 
     await ExerciseSet.findByIdAndUpdate(
       exerciseSetId,
